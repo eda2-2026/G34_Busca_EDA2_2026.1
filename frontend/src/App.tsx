@@ -1,167 +1,151 @@
-import { useEffect, useState } from 'react'
+import React from 'react';
 
 function App() {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
-  const [message, setMessage] = useState('')
-  const [latency, setLatency] = useState(0)
-
-  useEffect(() => {
-    const start = Date.now()
-    fetch('http://localhost:3000/ping')
-      .then(res => {
-        setLatency(Date.now() - start)
-        return res.json()
-      })
-      .then(data => {
-        setMessage(data.message)
-        setStatus('success')
-      })
-      .catch(() => {
-        setMessage('Erro ao conectar com o backend')
-        setStatus('error')
-      })
-  }, [])
-
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
-        <div style={styles.icon}>
-          {status === 'loading' ? '⏳' : status === 'success' ? '✅' : '❌'}
-        </div>
+      <div style={styles.contentWrapper}>
         
-        <h1 style={styles.title}>Connection Test</h1>
-        
-        <div style={getStatusBoxStyle(status)}>
-          {status === 'loading' && 'Connecting...'}
-          {status === 'success' && `Status: Online ✓`}
-          {status === 'error' && 'Status: Offline ✗'}
+        {/* Header / Título */}
+        <div style={styles.header}>
+          <div style={styles.badge}>
+            <span style={styles.badgeDot}></span>
+            BST Leaderboard
+          </div>
+          <h1 style={styles.title}>
+            Buscador de <span style={styles.highlight}>Commits</span>
+          </h1>
+          <p style={styles.subtitle}>
+            Explore os repositórios da organização EDA2 e encontre quem mais contribuiu, organizados via Árvore Binária de Busca.
+          </p>
         </div>
 
-        {status === 'success' && (
-          <>
-            <p style={styles.message}>{message}</p>
-            <div style={styles.latency}>
-              <span style={styles.latencyLabel}>Latency:</span>
-              <span style={styles.latencyValue}>{latency}ms</span>
-            </div>
-          </>
-        )}
+        {/* Search Input Area */}
+        <div style={styles.searchContainer}>
+          <div style={styles.inputWrapper}>
+            <svg style={styles.searchIcon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              style={styles.input} 
+              placeholder="Digite o nome de usuário do GitHub..."
+            />
+            <button style={styles.button}>
+              Buscar
+            </button>
+          </div>
+        </div>
 
-        <button 
-          style={styles.button}
-          onClick={() => {
-            setStatus('loading')
-            const start = Date.now()
-            fetch('http://localhost:3000/ping')
-              .then(res => {
-                setLatency(Date.now() - start)
-                return res.json()
-              })
-              .then(data => {
-                setMessage(data.message)
-                setStatus('success')
-              })
-              .catch(() => {
-                setMessage('Erro ao conectar com o backend')
-                setStatus('error')
-              })
-          }}
-        >
-          ⟳ Test Again
-        </button>
-      </div>
-
-      <div style={styles.footer}>
-        <span>Backend: localhost:3000</span>
-        <span>Frontend: localhost:5173</span>
       </div>
     </div>
-  )
+  );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '2rem',
+  },
+  contentWrapper: {
+    width: '100%',
+    maxWidth: '800px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '3rem',
+    alignItems: 'center',
+  },
+  header: {
+    textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-    fontFamily: "'Segoe UI', system-ui, sans-serif",
-    color: '#fff',
+    gap: '1rem',
   },
-  card: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: '24px',
-    padding: '3rem',
-    textAlign: 'center',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    minWidth: '320px',
+  badge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.5rem 1rem',
+    background: 'rgba(0, 240, 255, 0.1)',
+    border: '1px solid rgba(0, 240, 255, 0.2)',
+    borderRadius: '100px',
+    color: '#00f0ff',
+    fontSize: '0.875rem',
+    fontWeight: 600,
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase',
   },
-  icon: {
-    fontSize: '4rem',
-    marginBottom: '1rem',
+  badgeDot: {
+    width: '6px',
+    height: '6px',
+    backgroundColor: '#00f0ff',
+    borderRadius: '50%',
+    boxShadow: '0 0 8px #00f0ff',
   },
   title: {
-    margin: '0 0 2rem',
-    fontSize: '1.8rem',
-    fontWeight: 600,
+    fontSize: '3.5rem',
+    fontWeight: 800,
+    lineHeight: 1.1,
+    letterSpacing: '-0.02em',
+    color: '#ffffff',
   },
-}
-
-const getStatusBoxStyle = (status: string): React.CSSProperties => ({
-  padding: '0.75rem 1.5rem',
-  borderRadius: '50px',
-  background: status === 'loading' ? '#f59e0b20' : status === 'success' ? '#10b98120' : '#ef444420',
-  color: status === 'loading' ? '#f59e0b' : status === 'success' ? '#10b981' : '#ef4444',
-  fontWeight: 600,
-  fontSize: '0.9rem',
-  display: 'inline-block',
-  marginBottom: '1.5rem',
-})
-
-Object.assign(styles, {
-  message: {
-    fontSize: '1.2rem',
-    margin: '0 0 1rem',
-    color: '#a5b4fc',
+  highlight: {
+    background: 'linear-gradient(135deg, #00f0ff 0%, #8a2be2 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    textShadow: '0 0 30px rgba(0, 240, 255, 0.3)',
   },
-  latency: {
-    marginBottom: '2rem',
-    padding: '0.5rem 1rem',
-    background: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: '8px',
-    display: 'inline-flex',
-    gap: '0.5rem',
+  subtitle: {
+    color: '#94a3b8',
+    fontSize: '1.125rem',
+    maxWidth: '500px',
+    lineHeight: 1.6,
   },
-  latencyLabel: {
-    color: '#9ca3af',
+  searchContainer: {
+    width: '100%',
+    maxWidth: '600px',
   },
-  latencyValue: {
-    color: '#34d399',
-    fontWeight: 600,
-    fontFamily: 'monospace',
+  inputWrapper: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    background: 'var(--card-bg)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '16px',
+    padding: '0.5rem',
+    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)',
+    backdropFilter: 'blur(12px)',
+    transition: 'all 0.3s ease',
+  },
+  searchIcon: {
+    color: '#64748b',
+    marginLeft: '1rem',
+  },
+  input: {
+    flex: 1,
+    background: 'transparent',
+    border: 'none',
+    padding: '1rem 1rem',
+    fontSize: '1.125rem',
+    color: '#ffffff',
+    outline: 'none',
+    fontFamily: 'inherit',
   },
   button: {
-    padding: '0.75rem 2rem',
+    background: 'linear-gradient(135deg, #00f0ff 0%, #00a3ff 100%)',
+    color: '#0b0f19',
+    border: 'none',
+    padding: '1rem 2rem',
+    borderRadius: '12px',
     fontSize: '1rem',
     fontWeight: 600,
-    background: '#6366f1',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
     cursor: 'pointer',
-    transition: 'all 0.2s',
-  },
-  footer: {
-    marginTop: '3rem',
-    display: 'flex',
-    gap: '2rem',
-    color: '#6b7280',
-    fontSize: '0.85rem',
-  },
-})
+    transition: 'transform 0.2s, box-shadow 0.2s',
+    boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
+  }
+};
 
-export default App
+export default App;
