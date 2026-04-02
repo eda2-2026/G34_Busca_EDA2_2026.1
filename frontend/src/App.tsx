@@ -1,4 +1,5 @@
 import React from 'react';
+import { UserCard } from './components/UserCard';
 
 function App() {
   return (
@@ -36,6 +37,13 @@ function App() {
             </button>
           </div>
         </div>
+
+        {/* Mock Area (Etapa 2) */}
+        <UserCard 
+          username="torvalds"
+          avatarUrl="https://avatars.githubusercontent.com/u/1024025?v=4"
+          commits={54231}
+        />
 
       </div>
     </div>
