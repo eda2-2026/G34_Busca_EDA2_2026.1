@@ -1,7 +1,61 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UserCard } from './components/UserCard';
 
+// Interface esperada do retorno do Backend
+interface PlayerData {
+  nome: string;
+  commits: number;
+  avatar_url?: string;
+}
+
 function App() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [playerData, setPlayerData] = useState<PlayerData | null>(null);
+
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    setPlayerData(null);
+
+    try {
+      // Faz a requisição para a sua rota do Elysia
+      const res = await fetch(`http://localhost:3000/player/${searchTerm}`);
+      
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Usuário não encontrado na Árvore.');
+        }
+        throw new Error('Erro ao buscar o usuário');
+      }
+
+      const data = await res.json();
+      setPlayerData({
+        nome: data.nome || searchTerm,
+        commits: data.commits || 0,
+        // Caso o backend ainda não retorne o avatar, simulamos pelo github
+        avatar_url: data.avatar_url || `https://github.com/${searchTerm}.png`
+      });
+
+    } catch (err: any) {
+      // Mock Data (Fallback Visual) só para o Frontend funcionar enquanto o Backend não está pronto
+      if (searchTerm.toLowerCase() === 'mock') {
+         setPlayerData({
+            nome: "AlunoMock",
+            commits: 1337,
+            avatar_url: "https://github.com/github.png"
+         });
+      } else {
+         setError(err.message || 'Erro desconhecido. Tente usar "mock".');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.contentWrapper}>
@@ -31,19 +85,35 @@ function App() {
               type="text" 
               style={styles.input} 
               placeholder="Digite o nome de usuário do GitHub..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button style={styles.button}>
-              Buscar
+            <button 
+              style={styles.button} 
+              onClick={handleSearch}
+              disabled={loading}
+            >
+              {loading ? 'Buscando...' : 'Buscar'}
             </button>
           </div>
         </div>
 
-        {/* Mock Area (Etapa 2) */}
-        <UserCard 
-          username="torvalds"
-          avatarUrl="https://avatars.githubusercontent.com/u/1024025?v=4"
-          commits={54231}
-        />
+        {/* Status / Errors */}
+        {error && (
+           <div style={styles.errorBox}>
+             ⚠️ {error}
+           </div>
+        )}
+
+        {/* Resultado */}
+        {playerData && (
+          <UserCard 
+            username={playerData.nome}
+            avatarUrl={playerData.avatar_url!}
+            commits={playerData.commits}
+          />
+        )}
 
       </div>
     </div>
@@ -153,6 +223,14 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     transition: 'transform 0.2s, box-shadow 0.2s',
     boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
+  },
+  errorBox: {
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.2)',
+    color: '#ef4444',
+    padding: '1rem 2rem',
+    borderRadius: '12px',
+    fontWeight: 600,
   }
 };
 
