@@ -1,0 +1,111 @@
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+.contentWrapper {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+}
+.header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 100px;
+  color: #00f0ff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  background-color: #00f0ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00f0ff;
+}
+.title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+.highlight {
+  background: linear-gradient(135deg, #00f0ff 0%, #8a2be2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+}
+.subtitle {
+  color: #94a3b8;
+  font-size: 1.125rem;
+  max-width: 500px;
+  line-height: 1.6;
+}
+.searchContainer {
+  width: 100%;
+  max-width: 600px;
+}
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+.searchIcon {
+  color: #64748b;
+  margin-left: 1rem;
+}
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 1rem 1rem;
+  font-size: 1.125rem;
+  color: #ffffff;
+  outline: none;
+  font-family: inherit;
+}
+.button {
+  background: linear-gradient(135deg, #00f0ff 0%, #00a3ff 100%);
+  color: #0b0f19;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+.errorBox {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
