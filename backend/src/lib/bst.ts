@@ -80,7 +80,7 @@ export class RankingTree extends BinarySearchTree {
 
 export class SearchTree extends BinarySearchTree {
   protected goRight(incoming: User, current: User): boolean {
-    return incoming.username >= current.username;
+    return incoming.username.toLowerCase() >= current.username.toLowerCase();
   }
 }
 
