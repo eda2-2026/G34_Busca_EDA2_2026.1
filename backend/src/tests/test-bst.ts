@@ -4,11 +4,11 @@ const rankingTree = new RankingTree();
 const searchTree = new SearchTree();
 
 const users: User[] = [
-  { username: "alice", commits: 50, avatar_url: "https://example.com/alice.png" },
-  { username: "bob", commits: 30, avatar_url: "https://example.com/bob.png" },
-  { username: "charlie", commits: 80, avatar_url: "https://example.com/charlie.png" },
-  { username: "diana", commits: 20, avatar_url: "https://example.com/diana.png" },
-  { username: "eve", commits: 50, avatar_url: "https://example.com/eve.png" },
+  { username: "alice", commits: 50, avatar_url: "https://example.com/alice.png", repos: [] },
+  { username: "bob", commits: 30, avatar_url: "https://example.com/bob.png", repos: [] },
+  { username: "charlie", commits: 80, avatar_url: "https://example.com/charlie.png", repos: [] },
+  { username: "diana", commits: 20, avatar_url: "https://example.com/diana.png", repos: [] },
+  { username: "eve", commits: 50, avatar_url: "https://example.com/eve.png", repos: [] },
 ];
 
 console.log("=== Inserting users ===");

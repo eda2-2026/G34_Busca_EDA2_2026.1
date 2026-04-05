@@ -1,6 +1,6 @@
 .boardContainer {
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 20px;
@@ -21,80 +21,266 @@
   letter-spacing: -0.02em;
 }
 
+/* ─── Pódio (Top 3) ─── */
+.podiumSection {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem 0.5rem 1rem;
+}
+
+.podiumCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  flex: 1;
+  max-width: 190px;
+}
+
+.podiumCard:hover {
+  transform: translateY(-6px);
+}
+
+/* 1st place */
+.podium1 {
+  order: 2;
+  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.06);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.15), inset 0 1px 0 rgba(255, 215, 0, 0.1);
+  min-width: 160px;
+  max-width: 210px;
+}
+
+.podium1:hover {
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 215, 0, 0.2);
+}
+
+/* 2nd place */
+.podium2 {
+  order: 1;
+  border-color: rgba(192, 192, 192, 0.3);
+  background: rgba(192, 192, 192, 0.05);
+  box-shadow: 0 0 20px rgba(192, 192, 192, 0.1);
+}
+
+.podium2:hover {
+  box-shadow: 0 0 35px rgba(192, 192, 192, 0.2);
+}
+
+/* 3rd place */
+.podium3 {
+  order: 3;
+  border-color: rgba(205, 127, 50, 0.3);
+  background: rgba(205, 127, 50, 0.05);
+  box-shadow: 0 0 20px rgba(205, 127, 50, 0.1);
+}
+
+.podium3:hover {
+  box-shadow: 0 0 35px rgba(205, 127, 50, 0.2);
+}
+
+.podiumMedal {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.podium1 .podiumMedal {
+  font-size: 2.5rem;
+}
+
+.podiumAvatarWrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+}
+
+.podium1 .podiumAvatarWrapper {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+}
+
+.podium2 .podiumAvatarWrapper {
+  background: linear-gradient(135deg, #c0c0c0, #808080);
+}
+
+.podium3 .podiumAvatarWrapper {
+  background: linear-gradient(135deg, #cd7f32, #8b4513);
+}
+
+.podiumAvatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--bg-color);
+}
+
+.podiumUsername {
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.podiumCommits {
+  color: #00f0ff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* ─── Section Labels ─── */
+.sectionLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+}
+
+/* ─── Top 4–10 Section ─── */
+.topTenSection {
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Rest Section (11+) ─── */
+.restSection {
+  /* compact */
+}
+
+/* ─── Shared List Styles ─── */
 .list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .listItem {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  transition: all 0.25s ease;
   border: 1px solid transparent;
-  opacity: 0; /* Por causa do nosso fade-in global */
-}
-
-.listItem:hover {
-  background: rgba(0, 240, 255, 0.05);
-  border-color: rgba(0, 240, 255, 0.3);
-  transform: translateX(8px);
   cursor: pointer;
+  opacity: 0;
 }
 
+/* Top 10 items (4–10) */
+.topTenItem {
+  background: rgba(138, 43, 226, 0.06);
+  border-color: rgba(138, 43, 226, 0.15);
+  padding: 0.75rem 1.1rem;
+}
+
+.topTenItem:hover {
+  background: rgba(0, 240, 255, 0.07);
+  border-color: rgba(0, 240, 255, 0.3);
+  transform: translateX(6px);
+}
+
+/* Rest items (11+) */
+.restItem {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.restItem:hover {
+  background: rgba(0, 240, 255, 0.04);
+  border-color: rgba(0, 240, 255, 0.15);
+  transform: translateX(4px);
+}
+
+/* ─── Rank Badge ─── */
 .rankBadge {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
-  color: #8a2be2;
-  width: 45px;
+  color: #475569;
+  width: 40px;
   text-align: center;
+  flex-shrink: 0;
 }
 
-.listItem:nth-child(1) .rankBadge {
-  color: #ffd700; /* Gold */
-}
-.listItem:nth-child(2) .rankBadge {
-  color: #c0c0c0; /* Silver */
-}
-.listItem:nth-child(3) .rankBadge {
-  color: #cd7f32; /* Bronze */
+.rankBadgeHighlight {
+  color: #8a2be2;
+  font-size: 1.1rem;
 }
 
+/* ─── Avatar ─── */
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
+.avatarSmall {
+  width: 36px;
+  height: 36px;
+}
+
+/* ─── Info ─── */
 .info {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .username {
   font-weight: 600;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.restItem .username {
+  font-size: 0.9rem;
 }
 
 .commits {
   color: #00f0ff;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 2px;
+  letter-spacing: 0.04em;
+  margin-top: 1px;
 }
 
-.loadingBox, .errorBox {
+.restItem .commits {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+/* ─── Loading / Error States ─── */
+.loadingBox,
+.errorBox {
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   text-align: center;
   color: #94a3b8;
   padding: 2rem;

@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { RankingTree, SearchTree, insertUser } from "./lib/bst";
-import { fetchOrgRepositories, fetchAndAggregateContributors } from "./lib/github";
+import { fetchOrgRepositories, fetchAndAggregateContributors, fetchUserCommits } from "./lib/github";
 
 export let rankingTree = new RankingTree();
 export let searchTree = new SearchTree();
@@ -29,11 +29,52 @@ const app = new Elysia()
   .use(cors())
   .get("/", () => "Hello Elysia")
   .get("/ping", () => ({ message: "Backend ta On." }))
-  .get("/ranking", () => rankingTree.getRanking(100))
+  .get("/ranking", () => {
+    const users = rankingTree.getRanking(10000);
+    return users.map((user, index) => ({
+      username: user.username,
+      commits: user.commits,
+      avatar_url: user.avatar_url,
+      rank: index + 1,
+    }));
+  })
   .get("/search", ({ query }) => {
     if (!query.q) return { error: "Parâmetro de busca 'q' requerido" };
     const result = searchTree.searchByUsername(query.q as string);
     return result ? result : { error: "Usuário não encontrado" };
+  })
+  .get("/user/:username", ({ params, set }) => {
+    const user = searchTree.searchByUsername(params.username);
+    if (!user) {
+      set.status = 404;
+      return { error: "Usuário não encontrado" };
+    }
+    const rank = rankingTree.getUserRank(params.username);
+    return {
+      username: user.username,
+      commits: user.commits,
+      avatar_url: user.avatar_url,
+      rank: rank === -1 ? null : rank,
+      repos: user.repos,
+    };
+  })
+  .get("/user/:username/commits", async ({ params, set }) => {
+    const user = searchTree.searchByUsername(params.username);
+    if (!user) {
+      set.status = 404;
+      return { error: "Usuário não encontrado" };
+    }
+
+    const repoNames = user.repos.map((r) => r.name);
+
+    try {
+      const commits = await fetchUserCommits("eda2-2026", params.username, repoNames);
+      return { username: user.username, commits };
+    } catch (err) {
+      console.error("[/user/commits] Erro ao buscar commits:", err);
+      set.status = 500;
+      return { error: "Falha ao buscar commits do usuário" };
+    }
   })
   .post("/refresh", async ({ set }) => {
     try {

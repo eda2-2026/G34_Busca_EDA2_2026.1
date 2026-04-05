@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { UserCard } from './components/UserCard';
 import { Leaderboard } from './components/Leaderboard';
+import { UserProfile } from './components/UserProfile';
 import styles from './App.module.css';
 
 // Interface esperada do retorno do Backend
@@ -10,11 +11,27 @@ interface PlayerData {
   avatar_url?: string;
 }
 
+type View = 'leaderboard' | 'profile';
+
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);
+
+  // Navigation state
+  const [view, setView] = useState<View>('leaderboard');
+  const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
+
+  const handleUserClick = (username: string) => {
+    setSelectedUsername(username);
+    setView('profile');
+  };
+
+  const handleBack = () => {
+    setView('leaderboard');
+    setSelectedUsername(null);
+  };
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
@@ -24,7 +41,7 @@ function App() {
     setPlayerData(null);
 
     try {
-      // Faz a requisição para a rota do Elysia (Fase 2)
+      // Faz a requisição para a rota do Elysia
       const res = await fetch(`http://localhost:3000/search?q=${searchTerm}`);
       
       if (!res.ok) {
@@ -43,11 +60,10 @@ function App() {
       setPlayerData({
         nome: data.username || searchTerm,
         commits: data.commits || 0,
-        // Caso o backend ainda não retorne o avatar, simulamos pelo github
         avatar_url: data.avatar_url || `https://github.com/${data.username || searchTerm}.png`
       });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Mock Data (Fallback Visual) só para o Frontend funcionar enquanto o Backend não está pronto
       if (searchTerm.toLowerCase() === 'mock') {
          setPlayerData({
@@ -56,12 +72,34 @@ function App() {
             avatar_url: "https://github.com/github.png"
          });
       } else {
-         setError(err.message || 'Este usuário não commitou nos repositórios da eda2-2026.');
+         setError(err instanceof Error ? err.message : 'Este usuário não commitou nos repositórios da eda2-2026.');
       }
     } finally {
       setLoading(false);
     }
   };
+
+  // When in profile view, show the UserProfile screen
+  if (view === 'profile' && selectedUsername) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>
+          {/* Header / Título */}
+          <div className={styles.header}>
+            <div className={styles.badge}>
+              <span className={styles.badgeDot}></span>
+              BST Leaderboard
+            </div>
+            <h1 className={styles.title}>
+              Buscador de <span className={styles.highlight}>Commits</span>
+            </h1>
+          </div>
+
+          <UserProfile username={selectedUsername} onBack={handleBack} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -115,18 +153,43 @@ function App() {
            </div>
         )}
 
-        {/* Resultado */}
+        {/* Resultado da busca */}
         {playerData && (
-          <UserCard 
-            username={playerData.nome}
-            avatarUrl={playerData.avatar_url!}
-            commits={playerData.commits}
-          />
+          <div className={styles.searchResultWrapper}>
+            <div className={styles.searchResultActions}>
+              <button
+                className={styles.backToLeaderboardButton}
+                onClick={() => { setPlayerData(null); setError(null); setSearchTerm(''); }}
+                aria-label="Voltar ao leaderboard"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Voltar ao Leaderboard
+              </button>
+            </div>
+            <UserCard 
+              username={playerData.nome}
+              avatarUrl={playerData.avatar_url!}
+              commits={playerData.commits}
+            />
+            <button
+              className={styles.profileButton}
+              onClick={() => handleUserClick(playerData.nome)}
+              aria-label={`Ver perfil completo de ${playerData.nome}`}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Ver Perfil Completo
+            </button>
+          </div>
         )}
 
         {/* Leaderboard da Árvore */}
         {!playerData && !loading && !error && (
-           <Leaderboard />
+           <Leaderboard onUserClick={handleUserClick} />
         )}
 
       </div>

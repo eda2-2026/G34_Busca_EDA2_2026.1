@@ -1,7 +1,13 @@
+export interface RepoContribution {
+  name: string;
+  commits: number;
+}
+
 export interface User {
   username: string;
   commits: number;
   avatar_url: string;
+  repos: RepoContribution[];
 }
 
 export class Node {
@@ -75,6 +81,28 @@ export class RankingTree extends BinarySearchTree {
     
     traverse(this.root);
     return result;
+  }
+
+  getUserRank(username: string): number {
+    const usernameLower = username.toLowerCase();
+    let rank = 0;
+    let found = false;
+
+    function traverse(node: Node | null) {
+      if (!node || found) return;
+      traverse(node.right);
+      if (!found) {
+        rank++;
+        if (node.user.username.toLowerCase() === usernameLower) {
+          found = true;
+          return;
+        }
+        traverse(node.left);
+      }
+    }
+
+    traverse(this.root);
+    return found ? rank : -1;
   }
 }
 
