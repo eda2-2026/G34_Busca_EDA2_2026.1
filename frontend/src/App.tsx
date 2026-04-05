@@ -1,167 +1,124 @@
-import { useEffect, useState } from 'react'
+import React, { useState } from 'react';
+import { UserCard } from './components/UserCard';
+import styles from './App.module.css';
+
+// Interface esperada do retorno do Backend
+interface PlayerData {
+  nome: string;
+  commits: number;
+  avatar_url?: string;
+}
 
 function App() {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
-  const [message, setMessage] = useState('')
-  const [latency, setLatency] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [playerData, setPlayerData] = useState<PlayerData | null>(null);
 
-  useEffect(() => {
-    const start = Date.now()
-    fetch('http://localhost:3000/ping')
-      .then(res => {
-        setLatency(Date.now() - start)
-        return res.json()
-      })
-      .then(data => {
-        setMessage(data.message)
-        setStatus('success')
-      })
-      .catch(() => {
-        setMessage('Erro ao conectar com o backend')
-        setStatus('error')
-      })
-  }, [])
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    setPlayerData(null);
+
+    try {
+      // Faz a requisição para a sua rota do Elysia
+      const res = await fetch(`http://localhost:3000/player/${searchTerm}`);
+      
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Usuário não encontrado na Árvore.');
+        }
+        throw new Error('Erro ao buscar o usuário');
+      }
+
+      const data = await res.json();
+      setPlayerData({
+        nome: data.nome || searchTerm,
+        commits: data.commits || 0,
+        // Caso o backend ainda não retorne o avatar, simulamos pelo github
+        avatar_url: data.avatar_url || `https://github.com/${searchTerm}.png`
+      });
+
+    } catch (err: any) {
+      // Mock Data (Fallback Visual) só para o Frontend funcionar enquanto o Backend não está pronto
+      if (searchTerm.toLowerCase() === 'mock') {
+         setPlayerData({
+            nome: "AlunoMock",
+            commits: 1337,
+            avatar_url: "https://github.com/github.png"
+         });
+      } else {
+         setError(err.message || 'Erro desconhecido. Tente usar "mock".');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <div style={styles.icon}>
-          {status === 'loading' ? '⏳' : status === 'success' ? '✅' : '❌'}
-        </div>
+    <div className={styles.container}>
+      <div className={styles.contentWrapper}>
         
-        <h1 style={styles.title}>Connection Test</h1>
-        
-        <div style={getStatusBoxStyle(status)}>
-          {status === 'loading' && 'Connecting...'}
-          {status === 'success' && `Status: Online ✓`}
-          {status === 'error' && 'Status: Offline ✗'}
+        {/* Header / Título */}
+        <div className={styles.header}>
+          <div className={styles.badge}>
+            <span className={styles.badgeDot}></span>
+            BST Leaderboard
+          </div>
+          <h1 className={styles.title}>
+            Buscador de <span className={styles.highlight}>Commits</span>
+          </h1>
+          <p className={styles.subtitle}>
+            Explore os repositórios da organização EDA2 e encontre quem mais contribuiu, organizados via Árvore Binária de Busca.
+          </p>
         </div>
 
-        {status === 'success' && (
-          <>
-            <p style={styles.message}>{message}</p>
-            <div style={styles.latency}>
-              <span style={styles.latencyLabel}>Latency:</span>
-              <span style={styles.latencyValue}>{latency}ms</span>
-            </div>
-          </>
+        {/* Search Input Area */}
+        <div className={styles.searchContainer}>
+          <div className={styles.inputWrapper}>
+            <svg className={styles.searchIcon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              className={styles.input} 
+              placeholder="Digite o nome de usuário do GitHub..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button 
+              className={styles.button} 
+              onClick={handleSearch}
+              disabled={loading}
+            >
+              {loading ? 'Buscando...' : 'Buscar'}
+            </button>
+          </div>
+        </div>
+
+        {/* Status / Errors */}
+        {error && (
+           <div className={styles.errorBox}>
+             ⚠️ {error}
+           </div>
         )}
 
-        <button 
-          style={styles.button}
-          onClick={() => {
-            setStatus('loading')
-            const start = Date.now()
-            fetch('http://localhost:3000/ping')
-              .then(res => {
-                setLatency(Date.now() - start)
-                return res.json()
-              })
-              .then(data => {
-                setMessage(data.message)
-                setStatus('success')
-              })
-              .catch(() => {
-                setMessage('Erro ao conectar com o backend')
-                setStatus('error')
-              })
-          }}
-        >
-          ⟳ Test Again
-        </button>
-      </div>
+        {/* Resultado */}
+        {playerData && (
+          <UserCard 
+            username={playerData.nome}
+            avatarUrl={playerData.avatar_url!}
+            commits={playerData.commits}
+          />
+        )}
 
-      <div style={styles.footer}>
-        <span>Backend: localhost:3000</span>
-        <span>Frontend: localhost:5173</span>
       </div>
     </div>
-  )
+  );
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-    fontFamily: "'Segoe UI', system-ui, sans-serif",
-    color: '#fff',
-  },
-  card: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: '24px',
-    padding: '3rem',
-    textAlign: 'center',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    minWidth: '320px',
-  },
-  icon: {
-    fontSize: '4rem',
-    marginBottom: '1rem',
-  },
-  title: {
-    margin: '0 0 2rem',
-    fontSize: '1.8rem',
-    fontWeight: 600,
-  },
-}
-
-const getStatusBoxStyle = (status: string): React.CSSProperties => ({
-  padding: '0.75rem 1.5rem',
-  borderRadius: '50px',
-  background: status === 'loading' ? '#f59e0b20' : status === 'success' ? '#10b98120' : '#ef444420',
-  color: status === 'loading' ? '#f59e0b' : status === 'success' ? '#10b981' : '#ef4444',
-  fontWeight: 600,
-  fontSize: '0.9rem',
-  display: 'inline-block',
-  marginBottom: '1.5rem',
-})
-
-Object.assign(styles, {
-  message: {
-    fontSize: '1.2rem',
-    margin: '0 0 1rem',
-    color: '#a5b4fc',
-  },
-  latency: {
-    marginBottom: '2rem',
-    padding: '0.5rem 1rem',
-    background: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: '8px',
-    display: 'inline-flex',
-    gap: '0.5rem',
-  },
-  latencyLabel: {
-    color: '#9ca3af',
-  },
-  latencyValue: {
-    color: '#34d399',
-    fontWeight: 600,
-    fontFamily: 'monospace',
-  },
-  button: {
-    padding: '0.75rem 2rem',
-    fontSize: '1rem',
-    fontWeight: 600,
-    background: '#6366f1',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-  },
-  footer: {
-    marginTop: '3rem',
-    display: 'flex',
-    gap: '2rem',
-    color: '#6b7280',
-    fontSize: '0.85rem',
-  },
-})
-
-export default App
+export default App;
