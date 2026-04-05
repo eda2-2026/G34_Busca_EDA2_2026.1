@@ -59,7 +59,7 @@ export class RankingTree extends BinarySearchTree {
     return incoming.commits > current.commits;
   }
 
-  getTopUsers(limit: number = 100): User[] {
+  getRanking(limit: number = 100): User[] {
     const result: User[] = [];
     
     function traverse(node: Node | null) {
@@ -83,28 +83,23 @@ export class SearchTree extends BinarySearchTree {
     return incoming.username.toLowerCase() >= current.username.toLowerCase();
   }
 
-  searchUsers(query: string, limit: number = 10): User[] {
-    const result: User[] = [];
-    const qLower = query.toLowerCase();
+  searchByUsername(username: string): User | null {
+    const qLower = username.toLowerCase();
+    let current = this.root;
 
-    function traverse(node: Node | null) {
-      if (!node || result.length >= limit) return;
-
-      const nodeNameLower = node.user.username.toLowerCase();
+    while (current !== null) {
+      const currentName = current.user.username.toLowerCase();
       
-      if (nodeNameLower.startsWith(qLower)) {
-        result.push(node.user);
-        traverse(node.left);
-        traverse(node.right);
-      } else if (qLower < nodeNameLower) {
-        traverse(node.left);
+      if (qLower === currentName) {
+        return current.user;
+      } else if (qLower < currentName) {
+        current = current.left;
       } else {
-        traverse(node.right);
+        current = current.right;
       }
     }
 
-    traverse(this.root);
-    return result;
+    return null;
   }
 }
 
