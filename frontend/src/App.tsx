@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UserCard } from './components/UserCard';
+import { Leaderboard } from './components/Leaderboard';
 import styles from './App.module.css';
 
 // Interface esperada do retorno do Backend
@@ -23,22 +24,27 @@ function App() {
     setPlayerData(null);
 
     try {
-      // Faz a requisição para a sua rota do Elysia
-      const res = await fetch(`http://localhost:3000/player/${searchTerm}`);
+      // Faz a requisição para a rota do Elysia (Fase 2)
+      const res = await fetch(`http://localhost:3000/search?q=${searchTerm}`);
       
       if (!res.ok) {
         if (res.status === 404) {
-          throw new Error('Usuário não encontrado na Árvore.');
+          throw new Error('Usuário não encontrado nos repositórios da organização eda2-2026.');
         }
         throw new Error('Erro ao buscar o usuário');
       }
 
       const data = await res.json();
+      
+      if (data.error) {
+         throw new Error(data.error);
+      }
+
       setPlayerData({
-        nome: data.nome || searchTerm,
+        nome: data.username || searchTerm,
         commits: data.commits || 0,
         // Caso o backend ainda não retorne o avatar, simulamos pelo github
-        avatar_url: data.avatar_url || `https://github.com/${searchTerm}.png`
+        avatar_url: data.avatar_url || `https://github.com/${data.username || searchTerm}.png`
       });
 
     } catch (err: any) {
@@ -50,7 +56,7 @@ function App() {
             avatar_url: "https://github.com/github.png"
          });
       } else {
-         setError(err.message || 'Erro desconhecido. Tente usar "mock".');
+         setError(err.message || 'Este usuário não commitou nos repositórios da eda2-2026.');
       }
     } finally {
       setLoading(false);
@@ -85,7 +91,7 @@ function App() {
             <input 
               type="text" 
               className={styles.input} 
-              placeholder="Digite o nome de usuário do GitHub..."
+              placeholder="Pesquise um contribuidor da org (ex: usuário exato)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -98,12 +104,14 @@ function App() {
               {loading ? 'Buscando...' : 'Buscar'}
             </button>
           </div>
+          <p className={styles.helperText}>Somente contribuidores listados na Árvore da organização eda2-2026 aparecerão nesta pesquisa O(log N).</p>
         </div>
 
         {/* Status / Errors */}
         {error && (
            <div className={styles.errorBox}>
-             ⚠️ {error}
+             <strong style={{display: 'block', marginBottom: '4px'}}>Aviso da Árvore:</strong>
+             {error}
            </div>
         )}
 
@@ -114,6 +122,11 @@ function App() {
             avatarUrl={playerData.avatar_url!}
             commits={playerData.commits}
           />
+        )}
+
+        {/* Leaderboard da Árvore */}
+        {!playerData && !loading && !error && (
+           <Leaderboard />
         )}
 
       </div>

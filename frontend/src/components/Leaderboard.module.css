@@ -1,0 +1,106 @@
+.boardContainer {
+  width: 100%;
+  max-width: 600px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(16px);
+  margin-top: 1rem;
+}
+
+.boardTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  opacity: 0; /* Por causa do nosso fade-in global */
+}
+
+.listItem:hover {
+  background: rgba(0, 240, 255, 0.05);
+  border-color: rgba(0, 240, 255, 0.3);
+  transform: translateX(8px);
+  cursor: pointer;
+}
+
+.rankBadge {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #8a2be2;
+  width: 45px;
+  text-align: center;
+}
+
+.listItem:nth-child(1) .rankBadge {
+  color: #ffd700; /* Gold */
+}
+.listItem:nth-child(2) .rankBadge {
+  color: #c0c0c0; /* Silver */
+}
+.listItem:nth-child(3) .rankBadge {
+  color: #cd7f32; /* Bronze */
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.username {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.commits {
+  color: #00f0ff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.loadingBox, .errorBox {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  color: #94a3b8;
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  margin-top: 2rem;
+  backdrop-filter: blur(16px);
+}
