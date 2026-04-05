@@ -29,6 +29,12 @@ const app = new Elysia()
   .use(cors())
   .get("/", () => "Hello Elysia")
   .get("/ping", () => ({ message: "Backend ta On." }))
+  .get("/ranking", () => rankingTree.getRanking(100))
+  .get("/search", ({ query }) => {
+    if (!query.q) return { error: "Parâmetro de busca 'q' requerido" };
+    const result = searchTree.searchByUsername(query.q as string);
+    return result ? result : { error: "Usuário não encontrado" };
+  })
   .post("/refresh", async ({ set }) => {
     try {
       console.log("[Refresh] Buscando dados atualizados no GitHub...");
