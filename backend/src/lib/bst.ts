@@ -82,6 +82,30 @@ export class SearchTree extends BinarySearchTree {
   protected goRight(incoming: User, current: User): boolean {
     return incoming.username.toLowerCase() >= current.username.toLowerCase();
   }
+
+  searchUsers(query: string, limit: number = 10): User[] {
+    const result: User[] = [];
+    const qLower = query.toLowerCase();
+
+    function traverse(node: Node | null) {
+      if (!node || result.length >= limit) return;
+
+      const nodeNameLower = node.user.username.toLowerCase();
+      
+      if (nodeNameLower.startsWith(qLower)) {
+        result.push(node.user);
+        traverse(node.left);
+        traverse(node.right);
+      } else if (qLower < nodeNameLower) {
+        traverse(node.left);
+      } else {
+        traverse(node.right);
+      }
+    }
+
+    traverse(this.root);
+    return result;
+  }
 }
 
 export function insertUser(
