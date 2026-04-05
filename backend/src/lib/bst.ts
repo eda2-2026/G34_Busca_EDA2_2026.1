@@ -58,6 +58,24 @@ export class RankingTree extends BinarySearchTree {
     }
     return incoming.commits > current.commits;
   }
+
+  getTopUsers(limit: number = 100): User[] {
+    const result: User[] = [];
+    
+    function traverse(node: Node | null) {
+      if (!node || result.length >= limit) return;
+      
+      traverse(node.right);
+      
+      if (result.length < limit) {
+        result.push(node.user);
+        traverse(node.left);
+      }
+    }
+    
+    traverse(this.root);
+    return result;
+  }
 }
 
 export class SearchTree extends BinarySearchTree {
