@@ -9,7 +9,9 @@
 ```bash
 # Instalar dependências do backend
 cd backend && bun install
+```
 
+```bash
 # Instalar dependências do frontend
 cd ../frontend && bun install
 ```

@@ -53,7 +53,10 @@ export abstract class BinarySearchTree {
 
 export class RankingTree extends BinarySearchTree {
   protected goRight(incoming: User, current: User): boolean {
-    return incoming.commits >= current.commits;
+    if (incoming.commits === current.commits) {
+      return incoming.username.toLowerCase() < current.username.toLowerCase();
+    }
+    return incoming.commits > current.commits;
   }
 }
 
