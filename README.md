@@ -38,7 +38,7 @@ O projeto tem como objetivo principal demonstrar a utilização de estruturas de
 
 ## Demonstração
 
-![Link do Vídeo](https://www.youtube.com/watch?v=8zpeeg8Qswc)
+[Link do Vídeo](https://www.youtube.com/watch?v=8zpeeg8Qswc)
 
 ## Instalação
 
